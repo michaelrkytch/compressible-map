@@ -1,4 +1,15 @@
-# compressible-map
+# *DEPRECATED* compressible-map
+
+This was a fun way to try writing my own data structure in Clojure, and to explore the collection SPIs underlying persistent data structures in Cloujre.
+
+Eventually I realized that my initial set of requirements was mutually inconsistent.
+* The compression state of the values is part of the *value* of the compressible-map.  There is no way to fully hide this from the client unless we uncompress on every access.
+* Functional updates require value reads, which is incompatible with the requirement of leaving values compressed and buffering write operations.
+* Compressing the value makes it impossible to fully support persistent data structures as values, as the continuity of changes over time is interrupted by serializing a specific state for compression.
+* What is really desired here is a cache in front of a compressed in-memory KV store.
+* If the desire is to batch up the writes, then we should be journaling a list of update operations and applying them sequentially, not buffering a set of values.
+* Since the original use case was to support an in-memory KV store with hierarchical keys, we should consider a more traditional scheme of keeping the index tree in memory and compressing the values in blocks.
+
 
 ## Design
 
